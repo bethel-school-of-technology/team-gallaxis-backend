@@ -9,18 +9,19 @@ router.get('/', function(req, res, next) {
 });
 // Create new user if one doesn't exist
 router.post('/signup', function (req, res, next) {
+  console.log(req.body);
   models.users
     .findOrCreate({
       where: {
         Username: req.body.username
       },
       defaults: {
-        FirstName: req.body.firstName,
-        LastName: req.body.lastName,
-        Email: req.body.email,
-        Address: req.body.address,
-        CommunityName: req.body.communityName,
-        Password: authService.hashPassword(req.body.password) //<--- Change to this code here
+        FirstName: req.body.FirstName,
+        LastName: req.body.LastName,
+        Email: req.body.Email,
+        Address: req.body.Address,
+        CommunityName: req.body.CommunityName,
+        Password: authService.hashPassword(req.body.password) 
       }
     })
     .spread(function (result, created) {
