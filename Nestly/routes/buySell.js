@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models"); //<--- Add models
 var authService = require("../services/auth"); //<--- Add authentication service
+const Op = Sequelize.Op;
 
 router.get("/", function(req, res, next) {
   let token = req.cookies.jwt;
@@ -100,5 +101,15 @@ router.put("/:id", function(req, res, next) {
     .update(req.body, { where: { PostId: postId } })
     .then(result => res.redirect("/"));
 });
+
+var options = {
+  where: {
+    [Op.or]: [
+      { 'subject': { [Op.like]: '%' + query + '%' } },
+      { '$Comment.body$': { [Op.like]: '%' + query + '%' } }
+    ]
+  },
+  include: [{ model: Comment }]
+};
 
 module.exports = router;
