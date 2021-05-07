@@ -4,7 +4,7 @@ var models = require('../models'); //<--- Add models
 var authService = require('../services/auth'); //<--- Add authentication service
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.send('respond with a resource');
 });
 // Create new user if one doesn't exist
@@ -21,7 +21,7 @@ router.post('/signup', function (req, res, next) {
         Email: req.body.Email,
         Address: req.body.Address,
         CommunityName: req.body.CommunityName,
-        Password: authService.hashPassword(req.body.password) 
+        Password: authService.hashPassword(req.body.password)
       }
     })
     .spread(function (result, created) {
@@ -59,12 +59,12 @@ router.post('/login', function (req, res, next) {
   });
 });
 
-router.get('/profile', async(res, req, next) => {
+router.get('/profile', async (res, req, next) => {
   let token = req.headers.authorization;
   console.log(token);
-  
+
   if (token) {
-    let user = await tokenService.verifyToken(token)
+    tokenService.verifyToken(token)
       .then(user => {
         if (user) {
           res.send(JSON.stringify(user));
@@ -73,17 +73,17 @@ router.get('/profile', async(res, req, next) => {
           res.send('Invalid authentication token');
         }
       });
-  } else{
-            res.json ({
-                message: "Token was invalid or expired",
-                status: 403,
-            })
-        }
+  } else {
+    res.json({
+      message: "Token was invalid or expired",
+      status: 403,
+    })
+  }
 });
 
 router.get('/logout', function (req, res, next) {
   res.cookie('jwt', "", { expires: new Date(0) });
   res.send('Logged out');
-  });
+});
 
 module.exports = router;

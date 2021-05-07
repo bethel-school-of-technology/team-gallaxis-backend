@@ -31,7 +31,6 @@ router.get("/", function(req, res, next) {
 router.get("/:id", function(req, res, next) {
   let postId = parseInt(req.params.id);
   models.buySell.findOne({ where: { PostId: postId }, raw: true }).then(post => {
-    console.log(post);
     res.send(JSON.stringify(post));  //res.send(JSON.stringify(user));
   });
 });
@@ -102,14 +101,26 @@ router.put("/:id", function(req, res, next) {
     .then(result => res.redirect("/"));
 });
 
-var options = {
-  where: {
-    [Op.or]: [
-      { 'subject': { [Op.like]: '%' + query + '%' } },
-      { '$Comment.body$': { [Op.like]: '%' + query + '%' } }
-    ]
-  },
-  include: [{ model: Comment }]
-};
+
+
+router.get("/search/:search", function(req, res, next) {
+  let item = parseInt(req.params.search);
+  console.log(item);
+  models.buySell
+    .findAll({
+      where: {
+        [Op.or]: [
+          { 'subject': { [Op.like]: '%' + item + '%' } },
+          { '$Comment.body$': { [Op.like]: '%' + item + '%' } }
+        ]
+      },
+      include: [{ model: Comment }]
+    }
+      
+    )
+    .then(result => {
+      res.json({result});
+    })
+});
 
 module.exports = router;
