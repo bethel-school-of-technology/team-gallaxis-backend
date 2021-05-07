@@ -59,10 +59,12 @@ router.post('/login', function (req, res, next) {
   });
 });
 
-router.get('/profile', function (req, res, next) {
-  let token = req.cookies.jwt;
+router.get('/profile', async(res, req, next) => {
+  let token = req.headers.authorization;
+  console.log(token);
+  
   if (token) {
-    authService.verifyUser(token)
+    let user = await tokenService.verifyToken(token)
       .then(user => {
         if (user) {
           res.send(JSON.stringify(user));
@@ -71,10 +73,12 @@ router.get('/profile', function (req, res, next) {
           res.send('Invalid authentication token');
         }
       });
-  } else {
-    res.status(401);
-    res.send('Must be logged in');
-  }
+  } else{
+            res.json ({
+                message: "Token was invalid or expired",
+                status: 403,
+            })
+        }
 });
 
 router.get('/logout', function (req, res, next) {
