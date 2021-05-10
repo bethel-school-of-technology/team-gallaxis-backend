@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'buySell',
   });
-  posts.associate = function(models) {
+  buySell.associate = function(models) {
     // associations can be defined here
   };
   return buySell;
