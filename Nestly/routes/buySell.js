@@ -4,38 +4,48 @@ var models = require("../models"); //<--- Add models
 var authService = require("../services/auth"); //<--- Add authentication service
 const Op = Sequelize.Op;
 
-router.get("/", function(req, res, next) {
-  let token = req.cookies.jwt;
-  if (token) {
-    authService.verifyUser(token).then(user => {
-      if (user) {
-        models.buySell
-          .findAll({
-            where: { UserId: user.UserId }
-          })
-          .then(result => res.render("buySell", { buySell: result }));
-        //console.log(user.buySell);
-        //res.render("buySell", { buySell: user.buySell });
-        //res.send(JSON.stringify(user));
-      } else {
-        res.status(401);
-        res.send("Invalid authentication token");
-      }
-    });
-  } else {
-    res.status(401);
-    res.send("Must be logged in");
+//Get all posts
+router.get("/", function (req, res, next) {
+  let myToken = req.headers.authorization;
+  console.log(myToken);
+
+  if (myToken) {
+    let currentUser = await tokenService.verifyToken(myToken);
+    console.log(currentUser);
+
+    if (currentUser) {
+      models.buySell
+        .findAll({
+          where: { UserId: user.UserId }
+        })
+        .then(result => res.render("buySell", { buySell: result }));
+    }
+    else {
+      res.json({
+        message: "Token was invalid or expired",
+        status: 403,
+      })
+    }
+  }
+  else {
+    res.json({
+      message: "No token received",
+      status: 403,
+    })
   }
 });
 
-router.get("/:id", function(req, res, next) {
+//Get one post
+router.get("/:id", function (req, res, next) {
   let postId = parseInt(req.params.id);
   models.buySell.findOne({ where: { PostId: postId }, raw: true }).then(post => {
     res.send(JSON.stringify(post));  //res.send(JSON.stringify(user));
   });
 });
 
-router.post("/", function(req, res, next) {
+
+//Create post
+router.post("/newpost", function (req, res, next) {
   let token = req.cookies.jwt;
   if (token) {
     authService.verifyUser(token).then(user => {
@@ -45,20 +55,20 @@ router.post("/", function(req, res, next) {
             where: {
               PostTitle: req.body.postTitle,
             },
-            defaults:{
+            defaults: {
               UserId: user.UserId,
               PostBody: req.body.postBody
             }
           })
           .spread((result, created) => {
-            if(created){
+            if (created) {
               res.json({
                 message: 'buySell created',
                 status: 200,
                 result
 
               });
-            } else{
+            } else {
               res.json({
                 message: 'buySell not created',
                 status: 400,
@@ -67,8 +77,8 @@ router.post("/", function(req, res, next) {
 
             }
 
-  
-          });//res.send
+
+          });
       } else {
         res.status(401);
         res.send("Invalid authentication token");
@@ -80,7 +90,9 @@ router.post("/", function(req, res, next) {
   }
 });
 
-router.delete("/:id", function(req, res, next) {
+
+//Delete post
+router.delete("/:id", function (req, res, next) {
   let postId = parseInt(req.params.id);
   models.buySell
     .update(
@@ -89,21 +101,45 @@ router.delete("/:id", function(req, res, next) {
         where: { PostId: postId }
       }
     )
-    .then(result => res.redirect("/"));
-});
-
-router.put("/:id", function(req, res, next) {
-  let postId = parseInt(req.params.id);
-  console.log(req.body);
-  console.log(postId);
-  models.buySell
-    .update(req.body, { where: { PostId: postId } })
-    .then(result => res.redirect("/"));
+    .then(result => res.send("Deleted"));
 });
 
 
+//Update post by id
+router.put("/:id", function (req, res, next) {
+  let myToken = req.headers.authorization;
+  console.log(myToken);
 
-router.get("/search/:search", function(req, res, next) {
+  if (myToken) {
+    let currentUser = await tokenService.verifyToken(myToken);
+    console.log(currentUser);
+
+    if (currentUser) {
+      let postId = parseInt(req.params.id);
+      console.log(req.body);
+      console.log(postId);
+      models.buySell
+        .update(req.body, { where: { PostId: postId } })
+        .then(result => res.send("Updated"));
+    }
+    else {
+      res.json({
+        message: "Token was invalid or expired",
+        status: 403,
+      })
+    }
+  }
+  else {
+    res.json({
+      message: "No token received",
+      status: 403,
+    })
+  }
+});
+
+
+//Search posts
+router.get("/search/:search", function (req, res, next) {
   let item = parseInt(req.params.search);
   console.log(item);
   models.buySell
@@ -116,10 +152,10 @@ router.get("/search/:search", function(req, res, next) {
       },
       include: [{ model: Comment }]
     }
-      
+
     )
     .then(result => {
-      res.json({result});
+      res.json({ result });
     })
 });
 
