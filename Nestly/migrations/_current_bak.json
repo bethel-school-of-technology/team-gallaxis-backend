@@ -1,5 +1,42 @@
 {
     "tables": {
+        "buySells": {
+            "tableName": "buySells",
+            "schema": {
+                "PostId": {
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "field": "PostId",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "PostTitle": {
+                    "field": "PostTitle",
+                    "seqType": "Sequelize.STRING"
+                },
+                "PostBody": {
+                    "field": "PostBody",
+                    "seqType": "Sequelize.STRING"
+                },
+                "UserId": {
+                    "model": "users",
+                    "key": "UserId",
+                    "field": "UserId",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
         "users": {
             "tableName": "users",
             "schema": {
@@ -54,5 +91,5 @@
             "indexes": []
         }
     },
-    "revision": 1
+    "revision": 2
 }

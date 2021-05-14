@@ -18,6 +18,10 @@
                     "field": "PostBody",
                     "seqType": "Sequelize.STRING"
                 },
+                "Deleted": {
+                    "field": "Deleted",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
                 "UserId": {
                     "model": "users",
                     "key": "UserId",
@@ -91,5 +95,5 @@
             "indexes": []
         }
     },
-    "revision": 2
+    "revision": 3
 }

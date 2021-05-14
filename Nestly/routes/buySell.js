@@ -2,10 +2,11 @@ var express = require("express");
 var router = express.Router();
 var models = require("../models"); //<--- Add models
 var authService = require("../services/auth"); //<--- Add authentication service
+var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 //Get all posts
-router.get("/", function (req, res, next) {
+router.get("/", async function (req, res, next) {
   let myToken = req.headers.authorization;
   console.log(myToken);
 
@@ -46,7 +47,8 @@ router.get("/:id", function (req, res, next) {
 
 //Create post
 router.post("/newpost", function (req, res, next) {
-  let token = req.cookies.jwt;
+  console.log(req.body);
+  let token = req.headers.authorization;
   if (token) {
     authService.verifyUser(token).then(user => {
       if (user) {
@@ -106,12 +108,12 @@ router.delete("/:id", function (req, res, next) {
 
 
 //Update post by id
-router.put("/:id", function (req, res, next) {
+router.put("/:id",async function (req, res, next) {
   let myToken = req.headers.authorization;
   console.log(myToken);
 
   if (myToken) {
-    let currentUser = await tokenService.verifyToken(myToken);
+    let currentUser = await authService.verifyUser(myToken);
     console.log(currentUser);
 
     if (currentUser) {
