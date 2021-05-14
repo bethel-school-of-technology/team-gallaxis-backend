@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     PostTitle: DataTypes.STRING,
     PostBody: DataTypes.STRING,
+    Deleted: DataTypes.BOOLEAN,
     UserId: {
       type: DataTypes.INTEGER,
       model: "users",
