@@ -19,7 +19,7 @@ router.get("/", async function (req, res, next) {
         .findAll({
           where: { UserId: user.UserId }
         })
-        .then(result => res.render("buySell", { buySell: result }));
+        .then(result => res.json ({ buySell: result }));
     }
     else {
       res.json({
@@ -142,17 +142,15 @@ router.put("/:id",async function (req, res, next) {
 
 //Search posts
 router.get("/search/:search", function (req, res, next) {
-  let item = parseInt(req.params.search);
+  let item = req.params.search;
   console.log(item);
   models.buySell
     .findAll({
       where: {
-        [Op.or]: [
-          { 'subject': { [Op.like]: '%' + item + '%' } },
-          { '$Comment.body$': { [Op.like]: '%' + item + '%' } }
-        ]
-      },
-      include: [{ model: Comment }]
+        PostTitle: {
+          [Op.like]: "%" +item+"%" 
+        }
+      }
     }
 
     )
